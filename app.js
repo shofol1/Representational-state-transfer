@@ -24,10 +24,13 @@ mongoose.connect(uri, {
   useNewUrlParser: true,
 });
 //creating schema
-const articleSchema = mongoose.Schema({
-  title: String,
-  content: String,
-});
+const articleSchema = mongoose.Schema(
+  {
+    title: String,
+    content: String,
+  },
+  { strict: false }
+);
 
 //creating model
 const Article = mongoose.model("articles", articleSchema);
@@ -69,6 +72,40 @@ app.delete("/articles", (req, res) => {
     }
   });
 });
+// chaining route
+
+app
+  .route("/articles/:articleTitle")
+  .get((req, res) => {
+    Article.findOne({ title: req.params.articleTitle }, (err, foundArticle) => {
+      if (!err) {
+        res.send(foundArticle);
+      }
+    });
+  })
+  .put((req, res) => {
+    Article.updateOne(
+      { title: req.params.articleTitle },
+      { title: req.body.title, content: req.body.content },
+      { upsert: true },
+      (err) => {
+        if (!err) {
+          res.send("successfully updated!");
+        }
+      }
+    );
+  })
+  .patch((req, res) => {
+    Article.updateOne(
+      { title: req.params.articleTitle },
+      { $set: req.body },
+      (err) => {
+        if (!err) {
+          res.send("patch done");
+        }
+      }
+    );
+  });
 
 app.listen(process.env.PORT, function () {
   console.log("Server started on port ", process.env.PORT);
