@@ -23,7 +23,6 @@ const uri = `mongodb://localhost:${process.env.MONGOPORT}/wikiDB`;
 mongoose.connect(uri, {
   useNewUrlParser: true,
 });
-console.log(uri);
 //creating schema
 const articleSchema = mongoose.Schema({
   title: String,
@@ -59,6 +58,16 @@ app.post("/articles", (req, res) => {
     }
   });
   res.send("data inserted");
+});
+
+//delete
+
+app.delete("/articles", (req, res) => {
+  Article.deleteMany((err) => {
+    if (!err) {
+      res.send("successfully deleted all data!");
+    }
+  });
 });
 
 app.listen(process.env.PORT, function () {
