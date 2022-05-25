@@ -26,7 +26,7 @@ mongoose.connect(uri, {
 console.log(uri);
 //creating schema
 const articleSchema = mongoose.Schema({
-  tile: String,
+  title: String,
   content: String,
 });
 
@@ -34,12 +34,31 @@ const articleSchema = mongoose.Schema({
 const Article = mongoose.model("articles", articleSchema);
 
 //TODO
+
+//get request
 app.get("/articles", (req, res) => {
   Article.find((err, foundArticles) => {
     if (!err) {
       console.log(foundArticles);
     }
   });
+});
+
+//post request
+
+app.post("/articles", (req, res) => {
+  const newArticle = new Article({
+    title: req.body.title,
+    content: req.body.content,
+  });
+  console.log(newArticle);
+
+  newArticle.save((err) => {
+    if (!err) {
+      console.log("Data successfully saved");
+    }
+  });
+  res.send("data inserted");
 });
 
 app.listen(process.env.PORT, function () {
